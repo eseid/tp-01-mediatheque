@@ -27,6 +27,13 @@ class ServiceEmpruntTest {
     }
 
     @Test
+    void une_bd_est_empruntee_pour_deux_semaines() {
+        Emprunt emprunt = service.emprunter(adulte, new Document("B-0001", "Astérix chez les Bretons", TypeDocument.BD));
+
+        assertEquals(LocalDate.now().plusDays(14), emprunt.dateRetourPrevue());
+    }
+
+    @Test
     void un_dvd_est_emprunte_pour_une_semaine() {
         Emprunt emprunt = service.emprunter(adulte, new Document("V-0001", "Le Voyage de Chihiro", TypeDocument.DVD));
 

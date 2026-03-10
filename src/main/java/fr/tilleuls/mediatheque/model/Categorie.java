@@ -5,6 +5,7 @@ package fr.tilleuls.mediatheque.model;
  */
 public enum Categorie {
     ADULTE(5),
+    ETUDIANT(8),
     ENFANT(3);
 
     private final int quota;

@@ -57,6 +57,16 @@ class ServiceEmpruntTest {
         assertThrows(EmpruntRefuseException.class, () -> service.emprunter(adulte, livre("L-0006")));
     }
 
+    @Test
+    void un_etudiant_peut_emprunter_jusqu_a_huit_documents() {
+        Adherent etudiant = new Adherent("S-0310", "Nadia Benali", Categorie.ETUDIANT);
+        for (int i = 1; i <= 8; i++) {
+            service.emprunter(etudiant, livre("L-010" + i));
+        }
+
+        assertThrows(EmpruntRefuseException.class, () -> service.emprunter(etudiant, livre("L-0109")));
+    }
+
     private static Document livre(String code) {
         return new Document(code, "Livre " + code, TypeDocument.LIVRE);
     }

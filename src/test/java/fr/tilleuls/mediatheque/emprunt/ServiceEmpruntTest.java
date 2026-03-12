@@ -67,6 +67,18 @@ class ServiceEmpruntTest {
         assertThrows(EmpruntRefuseException.class, () -> service.emprunter(etudiant, livre("L-0109")));
     }
 
+    @Test
+    void un_enfant_ne_peut_pas_depasser_trois_emprunts() {
+        Adherent enfant = new Adherent("E-0007", "Léo Martin", Categorie.ENFANT);
+        service.emprunter(enfant, livre("L-0201"));
+        service.emprunter(enfant, livre("L-0202"));
+        service.emprunter(enfant, livre("L-0203"));
+
+        EmpruntRefuseException refus = assertThrows(EmpruntRefuseException.class,
+                () -> service.emprunter(enfant, livre("L-0204")));
+        assertEquals("Quota atteint pour l'adhérent E-0007 (3 emprunts maximum)", refus.getMessage());
+    }
+
     private static Document livre(String code) {
         return new Document(code, "Livre " + code, TypeDocument.LIVRE);
     }

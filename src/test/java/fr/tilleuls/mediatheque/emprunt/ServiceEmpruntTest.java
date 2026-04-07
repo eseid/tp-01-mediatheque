@@ -79,6 +79,20 @@ class ServiceEmpruntTest {
         assertEquals("Quota atteint pour l'adhérent E-0007 (3 emprunts maximum)", refus.getMessage());
     }
 
+    @Test
+    void un_retour_prevu_un_dimanche_est_reporte_au_mardi() {
+        LocalDate dimanche = LocalDate.of(2026, 5, 10);
+
+        assertEquals(LocalDate.of(2026, 5, 12), ServiceEmprunt.premierJourDOuverture(dimanche));
+    }
+
+    @Test
+    void un_retour_prevu_un_samedi_n_est_pas_reporte() {
+        LocalDate samedi = LocalDate.of(2026, 5, 9);
+
+        assertEquals(samedi, ServiceEmprunt.premierJourDOuverture(samedi));
+    }
+
     private static Document livre(String code) {
         return new Document(code, "Livre " + code, TypeDocument.LIVRE);
     }

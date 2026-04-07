@@ -4,6 +4,7 @@ import fr.tilleuls.mediatheque.model.Adherent;
 import fr.tilleuls.mediatheque.model.Document;
 import fr.tilleuls.mediatheque.model.Emprunt;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 public class ServiceEmprunt {
@@ -25,9 +26,21 @@ public class ServiceEmprunt {
         }
 
         LocalDate aujourdhui = LocalDate.now();
-        LocalDate retourPrevu = aujourdhui.plusDays(document.type().dureeEmpruntJours());
+        LocalDate retourPrevu = premierJourDOuverture(aujourdhui.plusDays(document.type().dureeEmpruntJours()));
         Emprunt emprunt = new Emprunt(adherent, document, aujourdhui, retourPrevu);
         repository.enregistrer(emprunt);
         return emprunt;
+    }
+
+    /**
+     * La médiathèque est fermée le dimanche et le lundi : un retour prévu
+     * ces jours-là est reporté au mardi.
+     */
+    static LocalDate premierJourDOuverture(LocalDate date) {
+        LocalDate jour = date;
+        while (jour.getDayOfWeek() == DayOfWeek.SUNDAY || jour.getDayOfWeek() == DayOfWeek.MONDAY) {
+            jour = jour.plusDays(1);
+        }
+        return jour;
     }
 }

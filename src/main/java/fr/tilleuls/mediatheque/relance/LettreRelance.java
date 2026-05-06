@@ -16,10 +16,10 @@ public class LettreRelance {
     private static final String MODELE = """
             Bonjour ${nom},
 
-            Le document "${titre}" devait etre rendu le ${dateRetourPrevue}.
-            Merci de le rapporter des que possible a la mediatheque Les Tilleuls.
+            Le document « ${titre} » devait être rendu le ${dateRetourPrevue}.
+            Merci de le rapporter dès que possible à la médiathèque Les Tilleuls.
 
-            Pour rappel, la mediatheque est ouverte du mardi au samedi.
+            Pour rappel, la médiathèque est ouverte du mardi au samedi.
             """;
 
     public String rediger(Emprunt emprunt) {

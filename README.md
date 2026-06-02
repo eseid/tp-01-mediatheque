@@ -16,6 +16,18 @@ le projet embarque le Maven Wrapper.
 .\mvnw.cmd test
 ```
 
+### Tests d'intégration (PostgreSQL)
+
+Les classes `*IT.java` ont besoin d'une base PostgreSQL. Elles sont **ignorées**
+si la variable `MEDIATHEQUE_DB_URL` n'est pas définie.
+
+```bash
+export MEDIATHEQUE_DB_URL=jdbc:postgresql://localhost:5432/mediatheque
+export MEDIATHEQUE_DB_USER=mediatheque
+export MEDIATHEQUE_DB_PASSWORD=...
+./mvnw verify
+```
+
 Le premier lancement télécharge Maven et les dépendances : c'est normal qu'il soit long.
 
 ## Règles métier

@@ -58,4 +58,4 @@ un de ces jours, elle est reportée au mardi suivant.
 - Au-delà, seuls les jours **au-delà de la tolérance** sont facturés.
   Exemple : un livre rendu avec 5 jours de retard → 2 jours facturés → 0,40 €.
 - Le montant est plafonné à **5,00 € par emprunt**.
-- Tarifs par jour : voir `src/main/resources/penalites.properties`.
+- Tarifs par jour : voir `src/main/resources/Penalites.properties`.

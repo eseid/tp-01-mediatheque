@@ -7,7 +7,12 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Calcule la pénalité due pour un emprunt rendu en retard.
+ */
 public class CalculateurPenalites {
+
+    private static final BigDecimal AUCUNE_PENALITE = BigDecimal.ZERO.setScale(2);
 
     private final GrilleTarifaire grille;
 
@@ -16,13 +21,22 @@ public class CalculateurPenalites {
     }
 
     public BigDecimal calculer(Emprunt emprunt, LocalDate dateRetour) {
-        long joursRetard = ChronoUnit.DAYS.between(emprunt.dateRetourPrevue(), dateRetour);
-        long joursFacturables = joursRetard - grille.joursTolerance();
+        long joursFacturables = joursDeRetard(emprunt, dateRetour) - grille.joursTolerance();
         if (joursFacturables <= 0) {
-            return BigDecimal.ZERO.setScale(2);
+            return AUCUNE_PENALITE;
         }
-        BigDecimal montant = grille.tarifParJour(emprunt.document().type())
-                .multiply(BigDecimal.valueOf(joursFacturables));
+        BigDecimal tarif = grille.tarifParJour(emprunt.document().type());
+        return plafonner(tarif.multiply(BigDecimal.valueOf(joursFacturables)));
+    }
+
+    /**
+     * Nombre de jours de retard, jour du retour inclus.
+     */
+    static long joursDeRetard(Emprunt emprunt, LocalDate dateRetour) {
+        return ChronoUnit.DAYS.between(emprunt.dateRetourPrevue(), dateRetour) + 1;
+    }
+
+    private BigDecimal plafonner(BigDecimal montant) {
         return montant.min(grille.plafond()).setScale(2, RoundingMode.HALF_UP);
     }
 }

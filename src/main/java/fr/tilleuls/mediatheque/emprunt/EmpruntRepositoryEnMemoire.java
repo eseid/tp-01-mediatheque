@@ -19,11 +19,14 @@ public class EmpruntRepositoryEnMemoire implements EmpruntRepository {
 
     @Override
     public boolean estEmprunte(String codeDocument) {
-        return emprunts.stream().anyMatch(e -> e.document().code().equals(codeDocument));
+        return emprunts.stream()
+                .anyMatch(emprunt -> emprunt.document().code().equals(codeDocument));
     }
 
     @Override
     public int nombreEmpruntsEnCours(String numeroAdherent) {
-        return (int) emprunts.stream().filter(e -> e.adherent().numero().equals(numeroAdherent)).count();
+        return (int) emprunts.stream()
+                .filter(emprunt -> emprunt.adherent().numero().equals(numeroAdherent))
+                .count();
     }
 }

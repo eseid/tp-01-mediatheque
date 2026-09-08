@@ -57,5 +57,6 @@ un de ces jours, elle est reportée au mardi suivant.
   n'entraîne aucune pénalité.
 - Au-delà, seuls les jours **au-delà de la tolérance** sont facturés.
   Exemple : un livre rendu avec 5 jours de retard → 2 jours facturés → 0,40 €.
+- Les **enfants** ne paient jamais de pénalité.
 - Le montant est plafonné à **5,00 € par emprunt**.
 - Tarifs par jour : livre et BD 0,20 €, DVD 0,50 € (`src/main/resources/Penalites.properties`).

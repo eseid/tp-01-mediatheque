@@ -52,6 +52,15 @@ class CalculateurPenalitesTest {
     }
 
     @Test
+    void un_enfant_ne_paie_jamais_de_penalite() {
+        Adherent enfant = new Adherent("E-0007", "Léo Martin", Categorie.ENFANT);
+        Document livre = new Document("L-0001", "Le Petit Prince", TypeDocument.LIVRE);
+        Emprunt emprunt = new Emprunt(enfant, livre, RETOUR_PREVU.minusDays(21), RETOUR_PREVU);
+
+        assertEquals(new BigDecimal("0.00"), calculateur.calculer(emprunt, RETOUR_PREVU.plusDays(20)));
+    }
+
+    @Test
     void la_penalite_est_plafonnee() {
         assertEquals(new BigDecimal("5.00"),
                 calculateur.calculer(empruntDe(TypeDocument.DVD), RETOUR_PREVU.plusDays(60)));

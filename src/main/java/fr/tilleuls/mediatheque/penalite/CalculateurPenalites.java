@@ -1,5 +1,6 @@
 package fr.tilleuls.mediatheque.penalite;
 
+import fr.tilleuls.mediatheque.model.Categorie;
 import fr.tilleuls.mediatheque.model.Emprunt;
 
 import java.math.BigDecimal;
@@ -21,6 +22,9 @@ public class CalculateurPenalites {
     }
 
     public BigDecimal calculer(Emprunt emprunt, LocalDate dateRetour) {
+        if (emprunt.adherent().categorie() == Categorie.ENFANT) {
+            return AUCUNE_PENALITE;
+        }
         long joursFacturables = joursDeRetard(emprunt, dateRetour) - grille.joursTolerance();
         if (joursFacturables <= 0) {
             return AUCUNE_PENALITE;

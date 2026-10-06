@@ -25,6 +25,7 @@ class LettreRelanceTest {
 
         String texte = lettre.rediger(emprunt);
 
+        assertTrue(texte.contains("13/10/2026"));
         assertTrue(texte.startsWith("Bonjour Jeanne Martin,"));
         assertTrue(texte.contains("« Le Petit Prince » devait être rendu le 13/10/2026"));
     }

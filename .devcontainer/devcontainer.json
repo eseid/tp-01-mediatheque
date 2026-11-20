@@ -1,0 +1,13 @@
+{
+  "name": "TP CI/CD - Médiathèque",
+  "image": "mcr.microsoft.com/devcontainers/java:21",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "github.vscode-github-actions"
+      ]
+    }
+  },
+  "postCreateCommand": "./mvnw -q -DskipTests test-compile"
+}

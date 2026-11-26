@@ -67,17 +67,31 @@ Ensuite :
 
 **Objectif** : lancer les tests sur votre poste et comprendre ce qui est testé.
 
+**Windows (PowerShell)**
+
 ```powershell
-# Windows (PowerShell)
 .\mvnw.cmd test
 .\mvnw.cmd verify
 ```
 
+**Linux, macOS, Git Bash, Codespaces**
+
 ```bash
-# Linux, Git Bash, Codespaces
 ./mvnw test
 ./mvnw verify
 ```
+
+Le premier lancement télécharge Maven et les dépendances : comptez une à deux minutes.
+
+> **Ce que vous devez obtenir**
+> - `test` lance les **tests unitaires** : 17 tests, `BUILD SUCCESS`.
+> - `verify` relance les tests unitaires, construit le jar, puis lance les **tests
+>   d'intégration** : `Tests run: 3, Failures: 0, Errors: 0, Skipped: 3`, et quand même
+>   `BUILD SUCCESS`.
+>
+> Ces 3 tests *skipped* (ignorés) sont attendus sur votre poste. Ne passez pas à la
+> suite sans savoir **pourquoi** : c'est le deuxième critère ci-dessous, et vous en
+> aurez besoin dans MED-104.
 
 **Critères d'acceptation**
 - Vous savez combien de tests unitaires sont lancés, et dans quelles classes.
@@ -109,7 +123,99 @@ push sur `main` et à chaque Pull Request vers `main`.
 - Il lance la même commande que vous en local.
 - La CI est **verte**, **sans désactiver, supprimer ni modifier l'intention d'aucun test**.
 
-Spoiler : la première exécution sera probablement rouge. C'est le but du ticket.
+C'est votre premier workflow, alors ce ticket est guidé. Les suivants ne le seront plus :
+vous réutiliserez ce que vous construisez ici.
+
+### Partie 1 — Construire le workflow
+
+**Le vocabulaire du matin, appliqué au projet**
+
+| Notion | Dans ce ticket |
+|---|---|
+| Workflow | le fichier `.github/workflows/ci.yml` |
+| Événement (`on`) | un push sur `main`, une Pull Request vers `main` |
+| Job | `tests-unitaires` : une suite d'étapes exécutées sur la même machine |
+| Runner | la machine qui exécute le job : une VM Ubuntu neuve, prêtée par GitHub et détruite à la fin |
+| Step | une étape du job : une commande (`run`) ou une action (`uses`) |
+| Action | une brique réutilisable, publiée par quelqu'un d'autre (`actions/checkout`, `actions/setup-java`…) |
+
+**Étape 1 : créer une branche pour le ticket**
+
+```
+git switch -c med-102-ci
+```
+
+**Étape 2 : créer le fichier `.github/workflows/ci.yml` et compléter les `???`**
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [ ??? ]
+  pull_request:
+    branches: [ ??? ]
+
+jobs:
+  tests-unitaires:
+    runs-on: ???
+    steps:
+      # Le runner démarre vide : il faut d'abord y récupérer le code du dépôt
+      - uses: actions/checkout@v7
+
+      # Puis installer le JDK
+      - uses: actions/setup-java@v6
+        with:
+          distribution: ???
+          java-version: ???
+
+      # Enfin, lancer les tests unitaires
+      - name: Tests unitaires
+        run: ???
+```
+
+Points d'attention :
+- En YAML, **l'indentation fait partie de la syntaxe**. Utilisez des espaces, jamais de
+  tabulations.
+- Le dossier s'appelle `.github/workflows`, avec un **s** et un point au début.
+- Le runner est une machine **Linux**. Choisissez la bonne variante du Maven Wrapper.
+- Ajoutez l'option `-B` (*batch mode*) à la commande Maven. Sans elle, les logs sont
+  pollués par les barres de progression des téléchargements.
+
+**Étape 3 : pousser et ouvrir la Pull Request**
+
+```
+git add .github/workflows/ci.yml
+git commit -m "MED-102 : CI sur push et PR"
+git push -u origin med-102-ci
+```
+
+Ouvrez ensuite une Pull Request de `med-102-ci` vers le `main` **de votre fork**.
+
+**Étape 4 : regarder la CI tourner**
+
+En bas de la Pull Request, la section *Checks* affiche le workflow `CI`. Vous le retrouvez
+aussi dans l'onglet **Actions**. Cliquez sur le job `tests-unitaires`, puis dépliez
+chaque step pour lire ses logs.
+
+✅ **Point d'étape** : un run `CI` apparaît sur votre Pull Request et ses steps
+s'exécutent, dans l'ordre.
+
+<details>
+<summary>Aucun run n'apparaît ?</summary>
+
+- Les workflows sont-ils activés dans l'onglet **Actions** de votre fork ?
+- Le chemin est-il exactement `.github/workflows/ci.yml` ?
+- La PR vise-t-elle bien le `main` de **votre fork**, et pas le dépôt d'origine ?
+- Si le YAML est invalide, l'onglet **Actions** affiche l'erreur en haut du run, avec le
+  numéro de ligne.
+</details>
+
+### Partie 2 — Faire passer la CI au vert
+
+La première exécution sera probablement rouge. C'est le but du ticket. Le code n'a pas
+changé depuis tout à l'heure, et les tests étaient verts sur votre poste. Qu'est-ce qui
+est différent sur le runner ?
 
 <details>
 <summary>Indice 1</summary>
@@ -131,43 +237,116 @@ fichiers de Linux de celui de Windows (ou de macOS) ?
 `git log --follow --stat -- src/main/resources/` : qui a touché à ce fichier, quand, et pourquoi ?
 </details>
 
+<details>
+<summary>Indice 4 — vous avez renommé un fichier, mais <code>git status</code> ne voit rien ?</summary>
+
+Windows et macOS ne distinguent pas les majuscules dans les noms de fichiers. Quand
+seule la casse change, Git ne voit souvent aucune différence. Renommez en deux fois,
+en passant par un nom temporaire :
+
+```
+git mv src/main/resources/Ancien.properties src/main/resources/temp.properties
+git mv src/main/resources/temp.properties src/main/resources/nouveau.properties
+```
+</details>
+
 **Question pour le débrief** : ce problème existe depuis juin. Pourquoi personne ne l'a vu ?
 
 ---
 
 ## MED-103 — « Les tests étaient rouges lundi » · 30 min
 
-**Objectif** : trouver les tests qui ne donnent pas toujours le même résultat, et les
-rendre **déterministes**.
+> **Message de Yanis sur le canal de l'équipe** : « Lundi matin, trois tests de
+> `ServiceEmpruntTest` étaient rouges. Mardi, je les ai relancés sans rien changer et
+> ils sont passés. Quelqu'un comprend ? »
 
-Si vous faites ce TP un dimanche ou un lundi, vous avez peut-être déjà croisé ce
-problème dès MED-101.
+Un test qui passe ou échoue selon le moment où on le lance, sans que le code ait changé,
+s'appelle un **test flaky** (instable). Dans une pipeline, c'est un poison : on finit
+par relancer la CI « pour voir », et on ne fait plus confiance au rouge.
+
+**Objectif** : comprendre pourquoi ces tests échouent certains jours, puis les rendre
+**déterministes** : même code, même résultat, quel que soit le jour.
 
 **Critères d'acceptation**
 - Vous savez dire **quels jours** ces tests échouent, et pourquoi.
 - Les tests donnent le même résultat quel que soit le jour où on les lance.
-- La règle « retour reporté au mardi quand la médiathèque est fermée » est toujours
-  testée, **via le service** (pas seulement via la méthode utilitaire).
+- Un test vérifie que **`emprunter()`**, appelé un lundi, reporte le retour au mardi.
+  Aujourd'hui, cette règle n'est testée que sur la petite méthode
+  `premierJourDOuverture`, jamais sur le vrai parcours d'un emprunt.
+
+### Étape 1 — Comprendre, sans attendre lundi
+
+Vous faites sans doute ce TP un autre jour : vos tests sont verts. Vous allez donc
+trouver le bug **en lisant le code**, pas en le voyant échouer.
+
+Ouvrez `ServiceEmprunt.java` et `ServiceEmpruntTest.java`, puis complétez ce tableau
+pour un **livre** (durée d'emprunt : 21 jours) :
+
+| L'emprunt a lieu le… | Date de retour calculée par le service | Date attendue par le test | Vert ou rouge ? |
+|---|---|---|---|
+| jeudi 26 novembre 2026 | | | |
+| lundi 23 novembre 2026 | | | |
+
+Que remarquez-vous sur 21, 14 et 7 jours ?
+
+### Étape 2 — Deux outils Java à connaître
+
+**`LocalDate.now()`** renvoie la date du jour, lue sur l'horloge de la machine. C'est
+pratique, mais un code qui l'appelle donne un résultat différent chaque jour. Le test
+ne peut pas savoir à l'avance quel jour on sera.
+
+```java
+LocalDate aujourdhui = LocalDate.now();   // 26/11 aujourd'hui, 27/11 demain…
+```
+
+**`java.time.Clock`** est un objet qui représente « l'horloge » à laquelle on demande
+l'heure. Au lieu de laisser le code lire l'horloge de la machine, on **lui passe une
+horloge** :
+
+```java
+// En production : l'horloge réelle de la machine
+Clock horloge = Clock.systemDefaultZone();
+
+// Dans un test : une horloge arrêtée, qui indique toujours le lundi 23 novembre 2026
+ZoneId paris = ZoneId.of("Europe/Paris");
+Clock horloge = Clock.fixed(LocalDate.of(2026, 11, 23).atStartOfDay(paris).toInstant(), paris);
+
+// Partout où le code a besoin de la date du jour :
+LocalDate aujourdhui = LocalDate.now(horloge);
+```
+
+`LocalDate.now(horloge)` renvoie la date **de l'horloge qu'on lui donne**. Avec
+l'horloge réelle, c'est aujourd'hui. Avec l'horloge figée, c'est toujours le 23 novembre,
+quel que soit le jour où le test tourne.
+
+### Étape 3 — Corriger et prouver
+
+1. Modifiez `ServiceEmprunt` pour qu'il **reçoive** une `Clock` (par son constructeur)
+   au lieu d'appeler `LocalDate.now()` tout seul. Le reste de l'application doit
+   continuer à fonctionner avec l'horloge réelle.
+2. Dans `ServiceEmpruntTest`, créez le service avec une horloge figée sur une date que
+   vous choisissez, et attendez une date **écrite en dur** : plus de `LocalDate.now()`
+   dans les tests.
+3. Ajoutez le test du troisième critère : horloge figée un lundi, emprunt d'un livre,
+   retour attendu le mardi.
 
 <details>
 <summary>Indice 1</summary>
 
-Dans `ServiceEmpruntTest`, d'où vient la date attendue ? Et dans `ServiceEmprunt`,
-d'où vient la date du jour ?
+Gardez deux constructeurs dans `ServiceEmprunt` : celui qui existe déjà, qui utilise
+l'horloge réelle, et un nouveau qui reçoit la `Clock`. Le code existant n'a ainsi rien
+à changer.
 </details>
 
 <details>
 <summary>Indice 2</summary>
 
-21, 14, 7 : qu'ont ces durées en commun ? Si on emprunte un mardi, quel jour tombe le retour ?
+Lundi 23 novembre 2026 + 21 jours = lundi 14 décembre 2026. La médiathèque est fermée
+le lundi : quelle date le service doit-il renvoyer ?
 </details>
 
-<details>
-<summary>Indice 3</summary>
-
-`java.time.Clock`. Le service ne doit pas aller chercher l'heure lui-même : on la
-lui donne. En production, l'horloge système ; dans les tests, `Clock.fixed(...)`.
-</details>
+**Question pour le débrief** : quelles autres sources de « hasard » peuvent rendre un
+test flaky ? (Pensez au fuseau horaire, à l'ordre d'exécution des tests, au réseau…)
 
 ---
 

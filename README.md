@@ -1,7 +1,7 @@
-# TP 1 — Premier jour de mission à la médiathèque
+# TP 1 - Premier jour de mission à la médiathèque
 
 **Durée** : un après-midi (environ 3 h 30)
-**Socle obligatoire** : tickets MED-101 à MED-105 · **Bonus** : MED-106 à MED-108
+**Socle obligatoire** : tickets MED-101 à MED-105 · **Bonus** : MED-106
 
 ## Le contexte
 
@@ -17,8 +17,7 @@ Le chef de projet vous a laissé ce message :
 
 > Les tests passent chez tout le monde, et pourtant on a des bugs en production.
 > Lundi dernier, Yanis jure que les tests étaient rouges alors que personne n'avait
-> touché au code. Le lendemain, tout était vert. Et depuis la 1.3.0, une adhérente
-> se plaint d'avoir payé une pénalité qu'elle ne devait pas.
+> touché au code. Le lendemain, tout était vert.
 >
 > À partir de maintenant, plus rien n'arrive sur `main` sans avoir été vérifié.
 
@@ -34,17 +33,15 @@ de 10 minutes, ouvrez les indices, un par un.
 L'IA est autorisée. En revanche, au débrief, vous devrez expliquer **la cause** de
 chaque problème avec vos propres mots, pas seulement la correction.
 
----
-
 ## Avant de commencer (15 min)
 
 Choisissez **une** des trois options.
 
-| | Option A — Windows | Option B — Linux (VM ou machine perso) | Option C — rien à installer |
+| | Option A - Windows | Option B - Linux (VM ou machine perso) | Option C - rien à installer |
 |---|---|---|---|
 | Java | JDK 21 [Temurin](https://adoptium.net/temurin/releases/?version=21) (`.msi`, cochez *Set JAVA_HOME*) | JDK 21 via votre gestionnaire de paquets ou [SDKMAN](https://sdkman.io) | GitHub Codespaces : bouton **Code → Codespaces → Create codespace** sur votre fork |
 | Git | [Git for Windows](https://git-scm.com/download/win) (fournit **Git Bash**) | déjà présent | déjà présent |
-| Terminal | PowerShell, ou Git Bash pour MED-108 | votre shell | le terminal de VS Code dans le navigateur |
+| Terminal | PowerShell (ou Git Bash) | votre shell | le terminal de VS Code dans le navigateur |
 
 Maven n'a pas besoin d'être installé : le projet embarque le **Maven Wrapper**
 (`mvnw` / `mvnw.cmd`). Docker n'est pas nécessaire non plus : tout ce qui demande des
@@ -61,9 +58,7 @@ Ensuite :
 > ⚠️ Quand vous créez une Pull Request depuis un fork, GitHub propose par défaut de
 > l'ouvrir vers le dépôt d'origine. Changez *base repository* pour choisir **votre fork**.
 
----
-
-## MED-101 — Faire tourner le projet sur votre poste · 15 min
+## MED-101 - Faire tourner le projet sur votre poste · 15 min
 
 **Objectif** : lancer les tests sur votre poste et comprendre ce qui est testé.
 
@@ -110,9 +105,7 @@ comparez les noms des classes de test (`*Test.java`, `*IT.java`). Ouvrez une
 classe `*IT.java` : quelle annotation se trouve au-dessus de la classe ?
 </details>
 
----
-
-## MED-102 — Une CI à chaque push et à chaque Pull Request · 30 min
+## MED-102 - Une CI à chaque push et à chaque Pull Request · 30 min
 
 **Objectif** : créer un workflow GitHub Actions qui lance les tests unitaires à chaque
 push sur `main` et à chaque Pull Request vers `main`.
@@ -126,7 +119,7 @@ push sur `main` et à chaque Pull Request vers `main`.
 C'est votre premier workflow, alors ce ticket est guidé. Les suivants ne le seront plus :
 vous réutiliserez ce que vous construisez ici.
 
-### Partie 1 — Construire le workflow
+### Partie 1 - Construire le workflow
 
 **Le vocabulaire du matin, appliqué au projet**
 
@@ -211,7 +204,7 @@ s'exécutent, dans l'ordre.
   numéro de ligne.
 </details>
 
-### Partie 2 — Faire passer la CI au vert
+### Partie 2 - Faire passer la CI au vert
 
 La première exécution sera probablement rouge. C'est le but du ticket. Le code n'a pas
 changé depuis tout à l'heure, et les tests étaient verts sur votre poste. Qu'est-ce qui
@@ -238,7 +231,7 @@ fichiers de Linux de celui de Windows (ou de macOS) ?
 </details>
 
 <details>
-<summary>Indice 4 — vous avez renommé un fichier, mais <code>git status</code> ne voit rien ?</summary>
+<summary>Indice 4 - vous avez renommé un fichier, mais <code>git status</code> ne voit rien ?</summary>
 
 Windows et macOS ne distinguent pas les majuscules dans les noms de fichiers. Quand
 seule la casse change, Git ne voit souvent aucune différence. Renommez en deux fois,
@@ -252,9 +245,7 @@ git mv src/main/resources/temp.properties src/main/resources/nouveau.properties
 
 **Question pour le débrief** : ce problème existe depuis juin. Pourquoi personne ne l'a vu ?
 
----
-
-## MED-103 — « Les tests étaient rouges lundi » · 30 min
+## MED-103 - « Les tests étaient rouges lundi » · 30 min
 
 > **Message de Yanis sur le canal de l'équipe** : « Lundi matin, trois tests de
 > `ServiceEmpruntTest` étaient rouges. Mardi, je les ai relancés sans rien changer et
@@ -274,7 +265,7 @@ par relancer la CI « pour voir », et on ne fait plus confiance au rouge.
   Aujourd'hui, cette règle n'est testée que sur la petite méthode
   `premierJourDOuverture`, jamais sur le vrai parcours d'un emprunt.
 
-### Étape 1 — Comprendre, sans attendre lundi
+### Étape 1 - Comprendre, sans attendre lundi
 
 Vous faites sans doute ce TP un autre jour : vos tests sont verts. Vous allez donc
 trouver le bug **en lisant le code**, pas en le voyant échouer.
@@ -289,7 +280,7 @@ pour un **livre** (durée d'emprunt : 21 jours) :
 
 Que remarquez-vous sur 21, 14 et 7 jours ?
 
-### Étape 2 — Deux outils Java à connaître
+### Étape 2 - Deux outils Java à connaître
 
 **`LocalDate.now()`** renvoie la date du jour, lue sur l'horloge de la machine. C'est
 pratique, mais un code qui l'appelle donne un résultat différent chaque jour. Le test
@@ -319,7 +310,7 @@ LocalDate aujourdhui = LocalDate.now(horloge);
 l'horloge réelle, c'est aujourd'hui. Avec l'horloge figée, c'est toujours le 23 novembre,
 quel que soit le jour où le test tourne.
 
-### Étape 3 — Corriger et prouver
+### Étape 3 - Corriger et prouver
 
 1. Modifiez `ServiceEmprunt` pour qu'il **reçoive** une `Clock` (par son constructeur)
    au lieu d'appeler `LocalDate.now()` tout seul. Le reste de l'application doit
@@ -348,9 +339,7 @@ le lundi : quelle date le service doit-il renvoyer ?
 **Question pour le débrief** : quelles autres sources de « hasard » peuvent rendre un
 test flaky ? (Pensez au fuseau horaire, à l'ordre d'exécution des tests, au réseau…)
 
----
-
-## MED-104 — Les tests d'intégration en CI, contre un vrai PostgreSQL · 40 min
+## MED-104 - Les tests d'intégration en CI, contre un vrai PostgreSQL · 40 min
 
 **Objectif** : exécuter les tests d'intégration (`*IT.java`) dans la CI, contre une
 vraie base PostgreSQL, sans rien installer sur votre poste.
@@ -381,9 +370,7 @@ Le `pom.xml` contient une propriété qui permet de ne lancer que les tests d'in
 mémoire ? Que se passe-t-il si quelqu'un supprime la variable `MEDIATHEQUE_DB_URL`
 du workflow ? La CI le détecte-t-elle ?
 
----
-
-## MED-105 — Quality gate sécurité et protection de `main` · 35 min
+## MED-105 - Quality gate sécurité et protection de `main` · 35 min
 
 **Objectif** : aucune dépendance avec une vulnérabilité connue **HIGH** ou
 **CRITICAL** ne doit atteindre `main`, et personne ne peut merger une Pull Request
@@ -414,9 +401,7 @@ code : épinglez-la par **SHA de commit** plutôt que par tag.
 *Settings → Rules → Rulesets → New branch ruleset*. Cherchez *Require status checks to pass*.
 </details>
 
----
-
-## MED-106 (bonus) — Une CI rapide, qui tourne aussi sous Windows · 25 min
+## MED-106 (bonus) - Une CI rapide, qui tourne aussi sous Windows · 25 min
 
 **Objectif** : accélérer la CI et vérifier que le projet fonctionne sur les deux
 systèmes utilisés par l'équipe.
@@ -436,85 +421,6 @@ et `fail-fast`. Sur un runner Windows, le shell par défaut est PowerShell.
 
 **Question pour le débrief** : si la CI n'avait tourné que sous Windows, le bug
 de MED-102 aurait-il été détecté ?
-
----
-
-## MED-107 (bonus) — Des résultats de tests lisibles dans la Pull Request · 20 min
-
-**Objectif** : publier le rapport des tests dans la Pull Request, pour ne plus avoir
-à fouiller dans les logs.
-
-**Critères d'acceptation**
-- Sur une Pull Request, un rapport liste les tests par classe, avec leur statut.
-- Les tests unitaires **et** les tests d'intégration y apparaissent.
-- Un test en échec est visible en un clic.
-
-<details>
-<summary>Indice</summary>
-
-Surefire et Failsafe produisent des rapports JUnit XML dans `target/`. L'action
-`dorny/test-reporter` sait les lire (`java-junit`). Attention aux permissions du
-`GITHUB_TOKEN`.
-</details>
-
----
-
-## MED-108 (défi) — L'enquête : la pénalité de Mme Lefèvre · 30 min
-
-Ticket ouvert par l'accueil de la médiathèque :
-
-> Mme Martine Lefèvre (adhérente adulte, carte A-1187) a emprunté *Le Petit Prince*
-> (livre). Retour prévu le **mardi 13/10/2026**, rendu le **vendredi 16/10/2026** :
-> 3 jours de retard, donc dans la tolérance. Elle a été facturée **0,20 €**.
-> Personne ne sait depuis quand. La 1.0.0 avait été validée à la main par le chef de
-> projet.
-
-**Objectif** : reproduire le bug par un test, retrouver le commit qui l'a introduit,
-puis corriger.
-
-**Critères d'acceptation**
-- Un test reproduit exactement le cas de Mme Lefèvre. Il est rouge avant la
-  correction et vert après.
-- Vous avez trouvé le commit fautif avec **`git bisect run`**, en une seule commande,
-  sans tester les commits à la main.
-- Le message de commit du correctif cite le commit fautif.
-- Vous savez expliquer pourquoi les tests existants ne l'ont pas détecté.
-
-<details>
-<summary>Indice 1</summary>
-
-Pendant le bisect, git va revenir sur d'anciens commits : votre test doit compiler
-sur la version 1.0.0. N'utilisez que des classes qui existaient déjà, et construisez
-la `GrilleTarifaire` vous-même (sans `charger()`).
-</details>
-
-<details>
-<summary>Indice 2</summary>
-
-Ne committez pas votre test avant le bisect : un fichier non suivi par git reste en
-place quand git change de commit.
-</details>
-
-<details>
-<summary>Indice 3</summary>
-
-Dans Git Bash, Linux ou Codespaces :
-
-```bash
-git bisect start <mauvais> <bon>
-git bisect run ./mvnw -q test -Dtest=<NomDeVotreTest>
-git bisect reset
-```
-</details>
-
-<details>
-<summary>Indice 4</summary>
-
-Relisez `CalculateurPenalitesTest`. Que vérifie **vraiment**
-`un_retard_au_dela_de_la_tolerance_est_facture` ?
-</details>
-
----
 
 ## Ce que vous rendez
 
